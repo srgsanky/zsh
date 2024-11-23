@@ -117,8 +117,19 @@ export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export LLVM_SYMBOLIZER_PATH=/opt/homebrew/opt/llvm/bin/llvm-symbolizer
 
 
-# Switch between windows using aerospace + fzf
+# Switch between windows using aerospace + fzf (Learnt from <https://www.youtube.com/watch?v=5nwnJjr5eOo>)
 function ff() {
   aerospace list-windows --all --format '%{window-id}%{right-padding} | %{app-name}%{right-padding} | %{window-title}' | \
     fzf --bind 'enter:execute(bash -c "aerospace focus --window-id {1}")+abort'
+}
+
+# Search for man pages using fzf (Learnt from <https://www.youtube.com/watch?v=_QKNWZHDH7M>)
+function manfzf() {
+  if command -v fzf > /dev/null 2>&1; then
+    # match in awk is used to return the text before a ( or space
+    local page=$(command man -k . | fzf --prompt='man> ' | awk '{match($0, /[^ (]*/); print substr($0, RSTART, RLENGTH)}')
+    if [[ -n $page ]]; then
+      /usr/bin/man $page
+    fi
+  fi
 }
