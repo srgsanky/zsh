@@ -1,5 +1,12 @@
-# Measure startup time of zsh
-# time zsh -i -c exit
+# Set this to 1 to enable profiling - this gives a breakdown of the individual functions that took time during startup
+ZSH_PROFILING=0
+
+# -n tests if the given string is non-empty
+if [[ ${ZSH_PROFILING:-} == 1 ]]; then
+    zmodload zsh/zprof
+fi
+# Note: I tried "time zsh -i -c exit" but I not sure if it reflects the real experience.
+
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -133,3 +140,8 @@ function manfzf() {
     fi
   fi
 }
+
+if [[ ${ZSH_PROFILING:-} == 1 ]]; then
+    zprof
+fi
+
