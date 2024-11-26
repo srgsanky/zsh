@@ -49,6 +49,7 @@ zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
 zinit light zsh-users/zsh-autosuggestions
 zinit light Aloxaf/fzf-tab
+zinit light ajeetdsouza/zoxide
 
 # Add specific snippets from oh my zsh.
 # The full oh my zsh is heavy and impacts the shell startup time.
