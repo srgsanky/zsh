@@ -17,10 +17,10 @@ fi
 
 # Mac - homebrew
 if [[ -f "/opt/homebrew/bin/brew" ]] then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-
   # Do not automatically update before running some commands, e.g. brew install, brew upgrade and brew tap
   export HOMEBREW_NO_AUTO_UPDATE=1
+
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
 # Set the directory to store zinit and its plugins
