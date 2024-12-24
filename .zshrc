@@ -142,6 +142,13 @@ function manfzf() {
   fi
 }
 
+# Use nvim as the default editor
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# dbus specific env variable for neovim + zathura integration to work with tex files
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
+
 if [[ ${ZSH_PROFILING:-} == 1 ]]; then
     zprof
 fi
