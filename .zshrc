@@ -47,7 +47,12 @@ zinit ice depth=1; zinit light romkatv/powerlevel10k
 # Plugins
 zinit light zsh-users/zsh-syntax-highlighting
 zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
+
+# Ghost text autocompletion.
+# This plugin suggests commands as you type based on your command history, displaying them as grayed-out "ghost text" after your cursor. You
+# can accept the suggestion by pressing the right arrow key or End.
+# zinit light zsh-users/zsh-autosuggestions
+
 zinit light Aloxaf/fzf-tab
 zinit light ajeetdsouza/zoxide
 
@@ -124,6 +129,9 @@ export PATH=$HOME/.cargo/bin:$PATH
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export LLVM_SYMBOLIZER_PATH=/opt/homebrew/opt/llvm/bin/llvm-symbolizer
 
+# This is required to point to the right llvm installation
+export LDFLAGS="-L/opt/homebrew/opt/llvm/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/llvm/include"
 
 # Switch between windows using aerospace + fzf (Learnt from <https://www.youtube.com/watch?v=5nwnJjr5eOo>)
 function ff() {
@@ -148,6 +156,10 @@ export VISUAL="nvim"
 
 # dbus specific env variable for neovim + zathura integration to work with tex files
 export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
+
+alias hideDesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
+alias showDesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
+
 
 if [[ ${ZSH_PROFILING:-} == 1 ]]; then
     zprof
