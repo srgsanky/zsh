@@ -54,7 +54,8 @@ zinit light zsh-users/zsh-completions
 # zinit light zsh-users/zsh-autosuggestions
 
 zinit light Aloxaf/fzf-tab
-zinit light ajeetdsouza/zoxide
+# zinit light ajeetdsouza/zoxide
+# zinit delete ajeetdsouza/zoxide
 
 # Add specific snippets from oh my zsh.
 # The full oh my zsh is heavy and impacts the shell startup time.
@@ -160,6 +161,22 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
 alias hideDesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showDesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
+# Use "up" instead of "cd ..". Use "up 3" instead of "cd ../../../"
+# Navigate up a specific number of directories (default: 1)
+up() {
+  local levels=${1:-1}
+  # Check if input is a number
+  if [[ "$levels" =~ ^[0-9]+$ ]]; then
+    local destpath=""
+    # C-style loop is more reliable for variables in Zsh
+    for ((i=0; i<levels; i++)); do
+      destpath="../$destpath"
+    done
+    builtin cd "$destpath"
+  else
+    echo "Usage: up [number]"
+  fi
+}
 
 if [[ ${ZSH_PROFILING:-} == 1 ]]; then
     zprof
