@@ -114,6 +114,8 @@ export MANPAGER='nvim +Man!'
 export MANWIDTH=999
 
 # Wezterm
+# Add wezterm cli to the PATH
+export PATH="$PATH:/Applications/WezTerm.app/Contents/MacOS"
 alias set-tab-title="wezterm cli set-tab-title"
 
 # export NVM_DIR="$HOME/.nvm"
