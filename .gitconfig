@@ -1,0 +1,20 @@
+[init]
+	defaultBranch = main
+[alias]
+    # logg = log --oneline --graph --decorate --color --all
+    #
+    #  - %h - abbreviated commit hash
+    #  - %an - author name
+    #  - %ae - author email
+    #  - %ar - relative date (e.g., "2 days ago")
+    #  - %ad - author date
+    #  - %s - subject (commit message first line)
+    #  - %d - shows refs with parentheses: (HEAD -> main, origin/main)
+    #  - %D - shows refs without parentheses: HEAD -> main, origin/main
+    #  - %n - newline
+    #
+    #  Color a field using %C(color)  %C(reset)
+    #
+    # Single quotes is required to avoid the error
+    # fatal: ambiguous argument '%s': unknown revision or path not in the working tree.
+    logg = log --graph --decorate --color --all --date=short --format='%C(auto)%h%d %s%n    %C(green)%an%C(reset) | %C(white)%ad | %ar%C(reset)%n'
