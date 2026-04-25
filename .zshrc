@@ -217,7 +217,12 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 
 # Path manipulations - might have to go to ~/.zshenv
 # Rust toolchain
-export PATH=$HOME/.cargo/bin:$PATH
+if [[ -f "$HOME/.cargo/env" ]]; then
+  . "$HOME/.cargo/env"
+elif [[ -d "$HOME/.cargo/bin" ]]; then
+  export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 export PATH="/opt/homebrew/opt/llvm/bin:$PATH"
 export LLVM_SYMBOLIZER_PATH=/opt/homebrew/opt/llvm/bin/llvm-symbolizer
 
