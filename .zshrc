@@ -213,6 +213,8 @@ corepack() { _lazy_load_nvm || return; corepack "$@"; }
 yarn()     { _lazy_load_nvm || return; yarn "$@"; }
 # Add pnpm() too if you use them through nvm.
 
+#######################################################################
+
 # deno
 export DENO_INSTALL="${HOME}/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
@@ -259,6 +261,10 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=$DBUS_LAUNCHD_SESSION_BUS_SOCKET"
 alias hideDesktop="defaults write com.apple.finder CreateDesktop -bool false && killall Finder"
 alias showDesktop="defaults write com.apple.finder CreateDesktop -bool true && killall Finder"
 
+#######################################################################
+################################ up ###################################
+#######################################################################
+
 # Use "up" instead of "cd ..". Use "up 3" instead of "cd ../../../"
 # Navigate up a specific number of directories (default: 1)
 up() {
@@ -275,6 +281,10 @@ up() {
     echo "Usage: up [number]"
   fi
 }
+
+#######################################################################
+################################ portuse ##############################
+#######################################################################
 
 # Find process using a port
 # Usage: portuse 1524
@@ -294,8 +304,6 @@ portuse() {
     echo "Port $port is free."
   fi
 }
-
-autoload -Uz colors && colors
 
 #######################################################################
 ################### Show duplicate files based on md5 #################
@@ -332,6 +340,83 @@ md5dups() {
     printed=1
   done
 }
+
+#######################################################################
+############################# Github setup ############################
+#######################################################################
+
+github_identity() {
+  # Identity to use for GitHub commits from this repo.
+  local name="Sankar S"
+  local email="1890648+srgsanky@users.noreply.github.com"
+
+  # Dedicated SSH key reserved for GitHub access.
+  local key="$HOME/.ssh/id_ed25519_github"
+
+  # Repo to configure; defaults to the current directory.
+  local repo="${1:-.}"
+
+  # Stop early if the GitHub SSH key has not been created yet.
+  if [[ ! -f "$key" ]]; then
+    echo "Missing key: $key"
+    echo "Create it first with:"
+    echo "ssh-keygen -t ed25519 -C \"$email\" -f \"$key\""
+    return 1
+  fi
+
+  # Make sure this is being applied only to a real Git repository.
+  git -C "$repo" rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
+    echo "Not a git repo: $repo"
+    return 1
+  }
+
+  # Make the key available for GitHub SSH authentication.
+  ssh-add --apple-use-keychain "$key" 2>/dev/null || ssh-add "$key"
+
+  # Scope the GitHub commit identity to this repo only.
+  git -C "$repo" config user.name "$name"
+  git -C "$repo" config user.email "$email"
+
+  # Force this repo to use the dedicated GitHub SSH key.
+  git -C "$repo" config core.sshCommand "ssh -i $key -o IdentitiesOnly=yes"
+
+  # Confirm what was configured.
+  echo "Configured GitHub identity for:"
+  git -C "$repo" rev-parse --show-toplevel
+  echo "$name <$email>"
+  echo "SSH key: $key"
+}
+
+github_clone() {
+  # Clone a GitHub repo with the dedicated GitHub SSH key.
+  local repo_url="$1"
+  local key="$HOME/.ssh/id_ed25519_github"
+
+  # Require the SSH clone URL.
+  if [[ -z "$repo_url" ]]; then
+    echo "Usage: github_clone git@github.com:OWNER/REPO.git"
+    return 1
+  fi
+
+  # Stop early if the GitHub SSH key has not been created yet.
+  if [[ ! -f "$key" ]]; then
+    echo "Missing key: $key"
+    return 1
+  fi
+
+  # Clone using only the dedicated GitHub key.
+  GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes" git clone "$repo_url" || return 1
+
+  # Enter the cloned repo.
+  local repo_dir="${repo_url:t:r}"
+  cd "$repo_dir" || return 1
+
+  # Apply repo-local GitHub identity and SSH key config.
+  github_identity
+}
+#######################################################################
+
+autoload -Uz colors && colors
 
 if [[ ${ZSH_PROFILING:-} == 1 ]]; then
     zprof
