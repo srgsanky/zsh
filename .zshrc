@@ -7,6 +7,8 @@ if [[ ${ZSH_PROFILING:-} == 1 ]]; then
 fi
 # Note: I tried "time zsh -i -c exit" but I not sure if it reflects the real experience.
 
+# lines starting with # will be treated as comments when pasted or typed interactively
+setopt interactivecomments
 
 # Disable p10k configuration wizard. Use the defaults
 POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
