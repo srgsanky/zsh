@@ -414,6 +414,82 @@ github_clone() {
   # Apply repo-local GitHub identity and SSH key config.
   github_identity
 }
+
+#######################################################################
+############################# rg specific #############################
+#######################################################################
+# https://man.archlinux.org/man/rg.1.en
+#
+# crg = common ripgrep helper
+#
+# Thin wrapper around ripgrep (rg) for common searches.
+#
+# Features:
+#   - Search only files with a given extension
+#   - Extension matching is case-insensitive
+#   - Content search is case-insensitive
+#   - Optional whole-word matching
+#   - Optional recursive search
+#   - Defaults to current directory only
+#
+# Usage:
+#   crg -e <ext> [-w] [-R] <pattern>
+#
+# Options:
+#   -e <ext>   File extension to search (required)
+#   -w         Match whole words only
+#   -R         Recursive search
+#
+# Examples:
+#   crg -e md oracle
+#   crg -e sql -w select
+#   crg -e txt -R "error code"
+#   crg -e md -R -w oracle
+
+crg() {
+  emulate -L zsh
+  setopt pipefail
+
+  local ext=""
+  local recursive=0
+  local whole_word=0
+
+  zparseopts -D -E \
+    e:=ext_opt \
+    w=word_opt \
+    R=recursive_opt
+
+  [[ -n "${ext_opt:-}" ]] && ext="${ext_opt[2]}"
+  [[ -n "${word_opt:-}" ]] && whole_word=1
+  [[ -n "${recursive_opt:-}" ]] && recursive=1
+
+  if [[ -z "$ext" || $# -lt 1 ]]; then
+    print -u2 "usage: crg -e <ext> [-w] [-R] <pattern>"
+    return 2
+  fi
+
+  local pattern="$1"
+
+  local word_flag=()
+  (( whole_word )) && word_flag=(-w)
+
+  # Build case-insensitive extension glob
+  # Example: md -> *.[mM][dD]
+  local glob="*."
+  local i ch
+  for (( i = 1; i <= ${#ext}; i++ )); do
+    ch="${ext[i]}"
+    glob+="[${ch:l}${ch:u}]"
+  done
+
+  if (( recursive )); then
+    rg -n -i "${word_flag[@]}" -g "$glob" -- "$pattern"
+  else
+    find . -maxdepth 1 -type f -name "$glob" -print0 \
+      | xargs -0 rg -n -i "${word_flag[@]}" -- "$pattern"
+  fi
+}
+
 #######################################################################
 
 autoload -Uz colors && colors
